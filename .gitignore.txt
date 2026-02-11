@@ -1,0 +1,36 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build output
+bin/
+obj/
+out/
+Debug/
+Release/
+
+# Logs
+*.log
+
+# User-specific files
+*.rsuser
+*.vcxproj.user
+*.psess
+*.vsp
+
+# ASP.NET Core
+*.db
+*.db-shm
+*.db-wal
+
+# Node / Next.js / React
+node_modules/
+.next/
+dist/
+.env
+.env.*
+
+# System files
+Thumbs.db
+.DS_Store
