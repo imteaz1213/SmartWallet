@@ -1,9 +1,10 @@
-﻿using IvyBackend.Data;
+﻿
+using IvyBackend.Data;
 using IvyBackend.Models.DTO;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace IvyBackend.Repository
@@ -18,72 +19,53 @@ namespace IvyBackend.Repository
         }
 
         public async Task<IEnumerable<TransactionFilterDTO>> ApplyFilterAsync(
-            int user, int month, int? accountId, int? categoryId, string? type, decimal? amount)
+            int user,
+            int startMonth,
+            int endMonth,
+            int? accountId,
+            int? categoryId,
+            string? type,
+            decimal? amount)
         {
-            if (string.IsNullOrEmpty(type))
-                return new List<TransactionFilterDTO>();
-
-            if (type.Equals("Income", StringComparison.OrdinalIgnoreCase))
+            try
             {
-                var query = from i in _context.Incomes
-                            join a in _context.Accounts on i.AccountId equals a.Id
-                            join c in _context.Categories on i.CategoryId equals c.Id
-                            where i.UserId == user && i.Date.Month == month
-                            select new TransactionFilterDTO
-                            {
-                                Type = "Income",
-                                Id = i.Id,
-                                Amount = i.Amount,
-                                Date = i.Date,
-                                AccountId = i.AccountId,
-                                CategoryId = i.CategoryId,
-                                AccountName = a.Name,
-                                CategoryName = c.Name
-                            };
+                if (string.IsNullOrEmpty(type))
+                    return new List<TransactionFilterDTO>();
 
-                if (accountId.HasValue)
-                    query = query.Where(x => x.AccountId == accountId.Value);
+                var userParam = new SqlParameter("@UserId", user);
+                var startMonthParam = new SqlParameter("@StartMonth", startMonth);
+                var endMonthParam = new SqlParameter("@EndMonth", endMonth);
+                var accountParam = new SqlParameter("@AccountId", (object?)accountId ?? DBNull.Value);
+                var categoryParam = new SqlParameter("@CategoryId", (object?)categoryId ?? DBNull.Value);
+                var typeParam = new SqlParameter("@Type", type);
+                var amountParam = new SqlParameter("@Amount", (object?)amount ?? DBNull.Value);
 
-                if (categoryId.HasValue)
-                    query = query.Where(x => x.CategoryId == categoryId.Value);
+                var transactions = await _context.Set<TransactionFilterDTO>()
+                    .FromSqlRaw(@"
+                        EXEC ApplyTransactionFilter 
+                            @UserId, 
+                            @StartMonth, 
+                            @EndMonth, 
+                            @AccountId, 
+                            @CategoryId, 
+                            @Type, 
+                            @Amount",
+                        userParam, startMonthParam, endMonthParam, accountParam, categoryParam, typeParam, amountParam)
+                    .AsNoTracking()
+                    .ToListAsync();
 
-                if (amount.HasValue && amount > 0)
-                    query = query.Where(x => x.Amount <= amount.Value);
-
-                return await query.ToListAsync();
+                return transactions;
             }
-            else if (type.Equals("Expense", StringComparison.OrdinalIgnoreCase))
+            catch (SqlException sqlEx)
             {
-                var query = from e in _context.Expenses
-                            join a in _context.Accounts on e.AccountId equals a.Id
-                            join c in _context.Categories on e.CategoryId equals c.Id
-                            where e.UserId == user && e.Date.Month == month
-                            select new TransactionFilterDTO
-                            {
-                                Type = "Expense",
-                                Id = e.Id,
-                                Amount = e.Amount,
-                                Date = e.Date,
-                                AccountId = e.AccountId,
-                                CategoryId = e.CategoryId,
-                                AccountName = a.Name,
-                                CategoryName = c.Name
-                            };
-
-                if (accountId.HasValue)
-                    query = query.Where(x => x.AccountId == accountId.Value);
-
-                if (categoryId.HasValue)
-                    query = query.Where(x => x.CategoryId == categoryId.Value);
-
-                if (amount.HasValue && amount > 0)
-                    query = query.Where(x => x.Amount <= amount.Value);
-
-                return await query.ToListAsync();
+                Console.Error.WriteLine($"SQL Error in ApplyFilterAsync: {sqlEx.Message}");
+                throw; 
             }
-
-            // Return empty list if type is invalid
-            return new List<TransactionFilterDTO>();
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in ApplyFilterAsync: {ex.Message}");
+                throw;
+            }
         }
     }
 }

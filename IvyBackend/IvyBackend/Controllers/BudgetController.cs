@@ -34,5 +34,36 @@ namespace IvyBackend.Controllers
 
             return Ok("Budget Added Successfully");
         }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateBudget([FromBody] BudgetDTO dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                await _budgetRepository.UpdateBudget(dto);
+                return Ok("Budget Updated Successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while updating the budget.");
+            }
+        }
+
+        [HttpDelete("{budgetId:int}")]
+        public async Task<IActionResult> DeleteBudget(int budgetId)
+        {
+            try
+            {
+                await _budgetRepository.DeleteBudget(budgetId);
+                return Ok("Budget Deleted Successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while deleting the budget.");
+            }
+        }
     }
 }

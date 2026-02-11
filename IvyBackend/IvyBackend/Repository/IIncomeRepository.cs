@@ -8,5 +8,7 @@ namespace IvyBackend.Repository
         Task AddIncome(IncomeDTO inc); 
         Task<IEnumerable<IncMonthDTO>> GetIncomeByMonth(int user_id, int month);
         Task<decimal> FullIncomeOfAUser(int user_id, int month);
+        Task UpdateIncome(IncomeDTO inc);
+        Task DeleteIncome(int id);
     }
 }

@@ -1,81 +1,132 @@
-﻿using IvyBackend.Data;
-using IvyBackend.Models;
+﻿
+using IvyBackend.Data;
 using IvyBackend.Models.DTO;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace IvyBackend.Repository
 {
     public class BudgetRepository : IBudgetRepository
     {
         private readonly ApplicationDbContext _context;
+
         public BudgetRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
+
         public async Task AddBudget(BudgetDTO dto)
         {
-            var categories = await _context.Categories
-               .Where(c => dto.CategoryIds.Contains(c.Id))
-               .ToListAsync();
-
-            var budget = new Budget
+            try
             {
-                Title = dto.Title,
-                Amount = dto.Amount,
-                Date = dto.Date,
-                UserId = dto.UserId,
-                Categories = categories
-            };
-            _context.Budgets.Add(budget);
-            await _context.SaveChangesAsync();
+                var categoryTable = new DataTable();
+                categoryTable.Columns.Add("Id", typeof(int));
+
+                foreach (var id in dto.CategoryIds)
+                    categoryTable.Rows.Add(id);
+
+                var categoryParam = new SqlParameter("@CategoryIds", categoryTable)
+                {
+                    TypeName = "CategoryIdTableType",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC AddBudget @Title={0}, @Amount={1}, @Date={2}, @UserId={3}, @CategoryIds=@CategoryIds",
+                    dto.Title, dto.Amount, dto.Date, dto.UserId, categoryParam
+                );
+            }
+            catch (SqlException sqlEx)
+            { 
+                Console.Error.WriteLine($"SQL Error in AddBudget: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+       
+                Console.Error.WriteLine($"Error in AddBudget: {ex.Message}");
+                throw;
+            }
         }
 
-        public async Task<IEnumerable<BudgetIdDTO>> GetBudgetById(int user_id, int month)
+
+        public async Task<IEnumerable<BudgetIdDTO>> GetBudgetById(int userId, int month)
         {
-            var budgcat = await (
-                from u in _context.Users
-                join b in _context.Budgets on u.Id equals b.UserId
-                join bc in _context.Set<Dictionary<string, object>>("BudgetCategory")
-                    on b.Id equals (int)bc["BudgetsId"]
-                join c in _context.Categories on (int)bc["CategoriesId"] equals c.Id
-                where u.Id == user_id && b.Date.Month == month
-                select new 
-                {
-                    User = u.Name,
-                    BudgetId = b.Id,
-                    BudgetTitle = b.Title,
-                    BudgetAmount = b.Amount,
-                    BudgetDate = b.Date,
-                    CategoryId = c.Id,
-                    CategoryColor = c.Color
-                }
-            ).ToListAsync();
+            try
+            {
+                var budgets = await _context.Set<BudgetIdDTO>()
+                    .FromSqlRaw("EXEC GetBudgetByUserMonth @UserId={0}, @Month={1}", userId, month)
+                    .ToListAsync();
 
-            var expenseSummary = await (
-                from e in _context.Expenses
-                where e.UserId == user_id && e.Date.Month == month
-                group e by e.CategoryId into g
-                select new
-                {
-                    CategoryId = g.Key,
-                    TotalExpense = g.Sum(x => x.Amount)
-                }
-            ).ToListAsync();
-            var result = (
-                from b in budgcat
-                join e in expenseSummary on b.CategoryId equals e.CategoryId into gj
-                from e in gj.DefaultIfEmpty()
-                select new BudgetIdDTO
-                {
-                    BudgetName = b.BudgetTitle,
-                    Total = b.BudgetAmount,
-                    Spent = e != null ? e.TotalExpense : 0,
-                    Color = b.CategoryColor,
-                    ExpenseAmount = e != null ? e.TotalExpense : 0
-                }
-            ).ToList();
-            return result;
+                return budgets;
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.Error.WriteLine($"SQL Error in GetBudgetById: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in GetBudgetById: {ex.Message}");
+                throw;
+            }
         }
+
+
+        public async Task UpdateBudget(BudgetDTO dto)
+        {
+            try
+            {
+                var categoryTable = new DataTable();
+                categoryTable.Columns.Add("Id", typeof(int));
+
+                foreach (var id in dto.CategoryIds)
+                    categoryTable.Rows.Add(id);
+
+                var categoryParam = new SqlParameter("@CategoryIds", categoryTable)
+                {
+                    TypeName = "CategoryIdTableType",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC UpdateBudget @BudgetId={0}, @Title={1}, @Amount={2}, @Date={3}, @CategoryIds=@CategoryIds",
+                    dto.Id, dto.Title, dto.Amount, dto.Date, categoryParam
+                );
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.Error.WriteLine($"SQL Error in UpdateBudget: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in UpdateBudget: {ex.Message}");
+                throw;
+            }
+        }
+
+
+        public async Task DeleteBudget(int budgetId)
+        {
+            try
+            {
+                await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC DeleteBudget @BudgetId={0}", budgetId
+                );
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.Error.WriteLine($"SQL Error in DeleteBudget: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in DeleteBudget: {ex.Message}");
+                throw;
+            }
+        } 
     }
 }

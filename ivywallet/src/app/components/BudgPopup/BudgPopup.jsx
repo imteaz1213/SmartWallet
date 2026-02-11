@@ -1,154 +1,218 @@
-"use client";     
-import  { useEffect } from "react"; 
+
+"use client";
+import { useEffect, useState } from "react";
 import styles from "./budgPopup.module.css";
-import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Calendar } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Calendar, X, DollarSign, Tag, CheckCircle } from "lucide-react";
 import Cookies from "js-cookie";
 
+const BudgPopup = ({ onClose, budget = null, refreshBudgets }) => {
+  const [category, setCategory] = useState([]);
+  const [title, setTitle] = useState(budget?.title || "");
+  const [cat, setCat] = useState(budget?.categoryId || 0);
 
-const BudgPopup = ({ onClose }) => {
-            const [category,setCategory] = useState([]);
-            const [title,setTitle] = useState("");
-            const [cat,setCat] = useState(0);
-            const [selectedDate, setSelectedDate] = useState(new Date());
-            const [amount,setAmount] = useState(0);
-            const [isOpen, setIsOpen] = useState(false);
-            
-            const formattedDate = selectedDate.toLocaleString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "2-digit",
-                  hour12: true,
-                  }
-            );
+  // Fix for invalid date: ensure string is parsed correctly
+  const parseBudgetDate = (dateStr) => {
+    if (!dateStr) return new Date();
+    // Replace space with T if needed and append Z to treat as UTC
+    const formatted = dateStr.includes("T") ? dateStr : dateStr.replace(" ", "T");
+    return new Date(formatted.endsWith("Z") ? formatted : formatted + "Z");
+  };
 
-            const getCategory = async () => {
-                        try {
-                              const token = Cookies.get("jwtToken");
-                              const res = await fetch(`http://localhost:8000/api/Home/GetCategory`, {
-                                    method: "GET",
-                                    headers: 
-                                    {
-                                          Authorization: `Bearer ${token}`,
-                                          "Content-Type": "application/json"
-                                    }
-                                    }
-                              );
-            
-                              const data = await res.json();
-                              setCategory(data);
-            
-                        } catch (err) {
-                              console.error("Error fetching category:", err);
-                        }
-                  };
+  const [selectedDate, setSelectedDate] = useState(
+    budget ? parseBudgetDate(budget.date) : new Date()
+  );
+  const [amount, setAmount] = useState(budget?.total || 0);
+  const [isOpen, setIsOpen] = useState(false);
 
+  const formattedDate = selectedDate.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 
-            const addBudget = async () => {
-                  const user = parseInt(Cookies.get("user")); 
-                  if (!user) 
-                        return alert("User not found");
+  // Fetch categories
+  const getCategory = async () => {
+    try {
+      const token = Cookies.get("jwtToken");
+      const res = await fetch(`http://localhost:8000/api/Home/GetCategory`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      setCategory(data);
+    } catch (err) {
+      console.error("Error fetching category:", err);
+    }
+  };
 
-                  if (!cat) 
-                        return alert("Please select a category");
+  // Add or update budget
+  const saveBudget = async () => {
+    const user = parseInt(Cookies.get("user"));
+    if (!user) return alert("User not found");
+    if (!cat) return alert("Please select a category");
 
-                  const budgetData = {
-                        title: title,
-                        amount: parseFloat(amount),
-                        date: selectedDate.toISOString(),
-                        userId: user,
-                        categoryIds: [parseInt(cat)]
-                  };
+    const budgetData = {
+      id: budget?.id || 0,
+      title: title,
+      amount: parseFloat(amount),
+      date: selectedDate.toISOString(),
+      userId: user,
+      categoryIds: [parseInt(cat)],
+    };
 
-                  try {
-                  const res = await fetch(`http://localhost:8000/api/Home/AddBudget`, {     
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(budgetData)
-                  });
+    try {
+      const url = budget
+        ? `http://localhost:8000/api/Budget/UpdateBudget`
+        : `http://localhost:8000/api/Budget/AddBudget`;
+      const method = budget ? "PUT" : "POST";
 
-                  if (res.ok) {
-                        onClose();
-                  } else {
-                        const errorText = await res.text();
-                        console.error("Error adding budget:", res.status, errorText);
-                        alert("Failed to add budget: " + errorText);
-                  }
-                  } catch (err) {
-                  console.error("Error adding budget:", err);
-                  alert("Error adding budget");
-                  }
-            };
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(budgetData),
+      });
 
-
+      if (res.ok) {
+        onClose();
+        refreshBudgets?.(); // Refresh the budget list
+      } else {
+        const errorText = await res.text();
+        alert(`Failed to ${budget ? "update" : "add"} budget: ${errorText}`);
+      }
+    } catch (err) {
+      console.error(`Error ${budget ? "updating" : "adding"} budget:`, err);
+      alert(`Error ${budget ? "updating" : "adding"} budget`);
+    }
+  };
 
   useEffect(() => {
-            getCategory();
-      }, []);
-           
+    getCategory();
+  }, []);
 
   return (
-            <div className={styles.overlay}>
-                  <div className={styles.content}>
-                        
-                  <h2 className={styles.title}> Add your Budget</h2>
-
-                  <div className={styles.form_group}>
-                        <input placeholder="Add Title" value={title} onChange={(e)=>setTitle(e.target.value)} type="text" />
-                  </div>
-
-                  <div className={styles.form_group}>
-                        <input placeholder="Add Amount" value={amount} onChange={(e)=>setAmount(e.target.value)} type="number"/>
-                  </div> 
-
-                  <div className={styles.dropdown_container}>
-                        <select value={cat} onChange={(e)=>setCat(e.target.value)} className={styles.dropdown_select}>
-                              <option value="">Choose Category...</option>
-                              {category.map((c) => (
-                                    <option key={c.id} value={c.id}>{c.name}</option>
-                              ))}
-                        </select>                
-                  </div>
-                 
-                  <div className={styles.info_card} onClick={() => setIsOpen(true)}>
-                              <div className={styles.info_item}>
-                              <Calendar className={styles.info_icon} size={18} />
-                              <span className={styles.info_label}>Created on</span>
-                              </div>
-
-                              <span className={styles.info_value}>{formattedDate}</span>
-
-                              {isOpen && (
-                              <DatePicker
-                              selected={selectedDate}
-                              onChange={(date) => {
-                                    setSelectedDate(date);
-                                    setIsOpen(false); 
-                              }}
-                              onClickOutside={() => setIsOpen(false)}
-                              inline
-                              showTimeSelect
-                              timeFormat="hh:mm aa"
-                              dateFormat="MMM d, yyyy h:mm aa"
-                              className={styles.custom_datepicker}
-                              />
-                              )}
-                        </div>
-
-                        <div className={styles.popup_buttons}>
-                              <button className={styles.btn_cancel} onClick={onClose} >
-                                    Cancel
-                              </button>
-                              <button onClick={addBudget} className={styles.btn_save} >
-                                    Add
-                              </button>
-                        </div>
-                  </div>  
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.content} onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className={styles.header}>
+          <div className={styles.headerLeft}>
+            <div className={styles.iconWrapper}>
+              <CheckCircle size={28} />
             </div>
-      );
+            <div>
+              <h2 className={styles.title}>{budget ? "Update Budget" : "Add New Budget"}</h2>
+              <p className={styles.subtitle}>Set your spending limit</p>
+            </div>
+          </div>
+          <button className={styles.closeButton} onClick={onClose}>
+            <X size={24} />
+          </button>
+        </div>
+
+        {/* Form */}
+        <div className={styles.formContainer}>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>
+              <Tag size={18} />
+              <span>Budget Title</span>
+            </label>
+            <input
+              className={styles.input}
+              placeholder="e.g., Monthly Groceries"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              type="text"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>
+              <DollarSign size={18} />
+              <span>Budget Amount</span>
+            </label>
+            <div className={styles.inputWrapper}>
+              <input
+                className={styles.input}
+                placeholder="0.00"
+                value={amount}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "") setAmount("");
+                  else if (parseFloat(value) >= 0) setAmount(value);
+                }}
+                type="number"
+              />
+              <span className={styles.currency}>BDT</span>
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>
+              <Tag size={18} />
+              <span>Category</span>
+            </label>
+            <select
+              value={cat}
+              onChange={(e) => setCat(e.target.value)}
+              className={styles.dropdownSelect}
+            >
+              <option value="">Choose Category...</option>
+              {category.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>
+              <Calendar size={18} />
+              <span>Date</span>
+            </label>
+            <div className={styles.infoCard} onClick={() => setIsOpen(true)}>
+              <div className={styles.infoLeft}>
+                <Calendar className={styles.infoIcon} size={18} />
+                <span className={styles.infoLabel}>Created on</span>
+              </div>
+              <span className={styles.infoValue}>{formattedDate}</span>
+              {isOpen && (
+                <div className={styles.datePickerWrapper}>
+                  <DatePicker
+                    selected={selectedDate}
+                    onChange={(date) => {
+                      setSelectedDate(date);
+                      setIsOpen(false);
+                    }}
+                    onClickOutside={() => setIsOpen(false)}
+                    inline
+                    showTimeSelect
+                    timeFormat="hh:mm aa"
+                    dateFormat="MMM d, yyyy h:mm aa"
+                    className={styles.customDatepicker}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Buttons */}
+        <div className={styles.popupButtons}>
+          <button className={styles.btnCancel} onClick={onClose}>
+            Cancel
+          </button>
+          <button onClick={saveBudget} className={styles.btnSave}>
+            <CheckCircle size={18} />
+            {budget ? "Update Budget" : "Add Budget"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
+
 export default BudgPopup;

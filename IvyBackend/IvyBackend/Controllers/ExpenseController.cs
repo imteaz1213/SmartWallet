@@ -42,5 +42,25 @@ namespace IvyBackend.Controllers
             var data = await _expenseRepository.FullExpenseOfAUser(user_id, month);
             return Ok(data);
         }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateExpense([FromBody] ExpenseDTO exp)
+        {
+            if (exp.Id <= 0)
+                return BadRequest("Invalid Expense Id.");
+
+            await _expenseRepository.UpdateExpense(exp);
+            return Ok("Expense Updated Successfully");
+        }
+
+        [HttpDelete("{expenseId:int}")]
+        public async Task<IActionResult> DeleteExpense(int expenseId)
+        {
+            if (expenseId <= 0)
+                return BadRequest("Invalid Expense Id.");
+
+            await _expenseRepository.DeleteExpense(expenseId);
+            return Ok("Expense Deleted Successfully");
+        }
     }
 }

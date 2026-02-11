@@ -49,6 +49,22 @@
   },
   {
     "ContainingType": "IvyBackend.Controllers.BudgetController",
+    "Method": "DeleteBudget",
+    "RelativePath": "api/Budget/DeleteBudget/{budgetId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "budgetId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IvyBackend.Controllers.BudgetController",
     "Method": "GetBudgetById",
     "RelativePath": "api/Budget/GetBudgetById/{user_id}/{month}",
     "HttpMethod": "GET",
@@ -69,6 +85,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "IvyBackend.Controllers.BudgetController",
+    "Method": "UpdateBudget",
+    "RelativePath": "api/Budget/UpdateBudget",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "IvyBackend.Models.DTO.BudgetDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "IvyBackend.Controllers.ExpenseController",
     "Method": "AddExpense",
     "RelativePath": "api/Expense/AddExpense",
@@ -79,6 +111,22 @@
       {
         "Name": "exp",
         "Type": "IvyBackend.Models.DTO.ExpenseDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IvyBackend.Controllers.ExpenseController",
+    "Method": "DeleteExpense",
+    "RelativePath": "api/Expense/DeleteExpense/{expenseId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "expenseId",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],
@@ -121,6 +169,22 @@
       {
         "Name": "month",
         "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IvyBackend.Controllers.ExpenseController",
+    "Method": "UpdateExpense",
+    "RelativePath": "api/Expense/UpdateExpense",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "exp",
+        "Type": "IvyBackend.Models.DTO.ExpenseDTO",
         "IsRequired": true
       }
     ],
@@ -206,6 +270,22 @@
   },
   {
     "ContainingType": "IvyBackend.Controllers.IncomeController",
+    "Method": "DeleteIncome",
+    "RelativePath": "api/Income/DeleteIncome/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "IvyBackend.Controllers.IncomeController",
     "Method": "FullIncomeOfAUser",
     "RelativePath": "api/Income/FullIncomeOfAUser/{user_id}/{month}",
     "HttpMethod": "GET",
@@ -247,6 +327,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "IvyBackend.Controllers.IncomeController",
+    "Method": "UpdateIncome",
+    "RelativePath": "api/Income/UpdateIncome",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "inc",
+        "Type": "IvyBackend.Models.DTO.IncomeDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "IvyBackend.Controllers.ReportController",
     "Method": "ApplyFilter",
     "RelativePath": "api/Report/ApplyFilter/ApplyFilter",
@@ -260,7 +356,12 @@
         "IsRequired": false
       },
       {
-        "Name": "month",
+        "Name": "startMonth",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "endMonth",
         "Type": "System.Int32",
         "IsRequired": false
       },

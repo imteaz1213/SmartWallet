@@ -1,7 +1,8 @@
 ﻿namespace IvyBackend.Models.DTO
 {
     public class IncMonthDTO
-    {
+    { 
+        public int Id { get; set; }
         public int UserId { get; set; }
         public string C_Name { get; set; } = string.Empty;
         public string C_Image { get; set; } = string.Empty;

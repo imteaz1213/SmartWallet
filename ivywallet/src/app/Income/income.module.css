@@ -1,4 +1,4 @@
-/* Main Container */
+
 .container {
   min-height: 100vh;
   background: linear-gradient(to bottom right, #020617, #0f172a, #1e293b);
@@ -7,7 +7,82 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Navigation */
+.cardFooter {
+  display: flex;                  
+  justify-content: space-between; 
+  align-items: center;            
+  padding: 10px 15px;            
+}
+
+.editBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background-color: #3b82f6; 
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.editBtn:hover {
+  background-color: #2563eb; 
+}
+
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background-color: #ef4444; 
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.deleteBtn:hover {
+  background-color: #dc2626; 
+}
+
+.slimSidebar {
+  width: 60px; 
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 20px;
+  gap: 15px;
+}
+
+.iconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.iconBtn:hover {
+  background-color: #374151; 
+  color: #ffffff;
+}
+
+
+.iconBtn.active {
+  background-color: #2563eb; 
+  color: white;
+}
+
 .nav {
   margin-bottom: 32px;
   display: flex;

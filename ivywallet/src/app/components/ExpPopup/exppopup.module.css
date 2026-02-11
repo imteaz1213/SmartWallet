@@ -1,189 +1,491 @@
+/* Overlay */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
   display: flex;
-  justify-content: center; /* horizontal center */
-  align-items: flex-start; /* align near top */
-  padding-top: 50px;       /* distance from top */
-  z-index: 1000;
-}
-
-/* Popup box */ 
-.content {
-  background: #393c39;
-  border-radius: 8px;
-  padding: 20px;
-  width: 800px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.title{
-  margin-bottom: 20px;
-  padding: 10px;
-  color: white;
-  padding-left: 0px;
   align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
 }
 
-/* Form groups */
-.form_group {
-  margin-bottom: 30px;
-  display: flex;
-  flex-direction: column;
-}
-
-.form_group_des {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  margin-top: 40px;
-}
-
-.form_group_des textarea{
-  padding-top: 10px;
-  padding-left: 10px;
-  color: #030303;
-  height: 100px;
-  background-color: #f8f1f1;
-}
-.form_group label {
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.form_group input {
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-/* Buttons container */
-.popup_buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.btn_cancel {
-  background-color: #ccc;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-  color: #090808;
-  cursor: pointer;
-}
-
-.btn_save {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.dropdown_container {
-  display: flex;
-  flex-direction: column;
+/* Content Container */
+.content {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 24px;
+  padding: 0;
+  max-width: 520px;
   width: 100%;
-  margin: 20px auto;
-  font-family: "Poppins", sans-serif;
-}
-
-.dropdown_select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: #ffffff;
-  border: 2px solid #d1d5db;
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-size: 15px;
-  color: #0c0b0c;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  cursor: pointer;
-  outline: none;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.4s ease-out;
   position: relative;
 }
 
-.info_card {
-  position: relative;
+/* Header */
+.header {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  padding: 32px 32px 24px 32px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  position: sticky;
+  top: 0;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  z-index: 10;
+}
+
+.headerLeft {
+  display: flex;
+  gap: 16px;
   align-items: center;
-  background-color: #f6f2f2;
-  border-radius: 14px;
-  padding: 12px 18px;
-  margin: 30px 0px;
-  color: #090808;
-  font-family: "Inter", sans-serif;
-  transition: all 0.3s ease;
+}
+
+.iconWrapper {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #60a5fa;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: white;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0;
+  font-weight: 500;
+}
+
+.closeButton {
+  width: 40px;
+  height: 40px;
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
   cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
-.info_card:hover {
-  background-color: #0c0b0b;
-  transform: translateY(-1px);
+.closeButton:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  transform: rotate(90deg);
 }
 
-.info_item {
+/* Form Container */
+.formContainer {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Form Group */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.label {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.info_icon {
-  color: #2159bb;
-}
-
-.info-label {
   font-size: 14px;
-  font-weight: 500;
-  color: #090a0d;
+  font-weight: 600;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.form_group input{
-  background-color: white;
-  color: #030303;
+.label svg {
+  color: #60a5fa;
 }
-.form_group_des input{
-   background-color: white;
-   color: #030303;
-}
-.info_value {
-  font-size: 15px;
-  font-weight: 700;
-  color: #030303;
-} 
 
-/* Customizing the inline datepicker popup */
-.react_datepicker {
-  background-color: #ede7e7 !important;
-  border: 1px solid #3f3f3f;
+/* Input Styles */
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
-  padding: 10px;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  outline: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.input::placeholder {
+  color: #64748b;
+}
+
+.input:focus {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+.input:hover {
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+/* Input Wrapper for Amount */
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputWrapper .input {
+  padding-right: 60px;
+}
+
+.currency {
   position: absolute;
-  top: 60px;
+  right: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #60a5fa;
+  background: rgba(96, 165, 250, 0.1);
+  padding: 6px 12px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+/* Dropdown Container */
+.dropdownContainer {
+  position: relative;
+}
+
+.dropdownSelect {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+  padding-right: 45px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.dropdownSelect:focus {
+  background-color: rgba(30, 41, 59, 0.8);
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+.dropdownSelect:hover {
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.dropdownSelect option {
+  background: #1e293b;
+  color: white;
+  padding: 12px;
+  font-weight: 500;
+}
+
+/* Info Card (Date Picker Trigger) */
+.infoCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.infoCard:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(96, 165, 250, 0.5);
+}
+
+.infoLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.infoIcon {
+  color: #60a5fa;
+  flex-shrink: 0;
+}
+
+.infoLabel {
+  font-size: 14px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.infoValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #cbd5e1;
+  background: rgba(96, 165, 250, 0.1);
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+/* Date Picker Wrapper */
+.datePickerWrapper {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
   right: 0;
-  z-index: 20;
+  z-index: 1000;
+  animation: slideDown 0.2s ease-out;
 }
 
-.react-datepicker__day,
-.react-datepicker__time-name {
-  color: #e5e7eb !important;
+.customDatepicker {
+  background: rgba(15, 23, 42, 0.98) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
-.react-datepicker__day--selected {
-  background-color: #6366f1 !important;
+/* Action Buttons */
+.popupButtons {
+  display: flex;
+  gap: 12px;
+  padding: 24px 32px 32px 32px;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 }
 
-.react-datepicker__day--keyboard-selected {
-  background-color: #818cf8 !important;
+.btnCancel {
+  flex: 1;
+  padding: 14px 24px;
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  color: #cbd5e1;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.btnCancel:hover {
+  background: rgba(148, 163, 184, 0.15);
+  border-color: rgba(148, 163, 184, 0.3);
+  transform: translateY(-2px);
+}
+
+.btnSave {
+  flex: 1;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.btnSave:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+}
+
+.btnSave:active {
+  transform: translateY(0);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollbar Styling */
+.content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 10px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: rgba(96, 165, 250, 0.5);
+  border-radius: 10px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: rgba(96, 165, 250, 0.7);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .content {
+    max-width: 100%;
+    margin: 10px;
+    max-height: 95vh;
+  }
+
+  .header {
+    padding: 24px 20px 20px 20px;
+  }
+
+  .formContainer {
+    padding: 24px 20px;
+    gap: 20px;
+  }
+
+  .popupButtons {
+    padding: 20px;
+    flex-direction: column;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .iconWrapper {
+    width: 48px;
+    height: 48px;
+  }
+
+  .headerLeft {
+    gap: 12px;
+  }
+}
+
+/* React DatePicker Custom Styles */
+:global(.react-datepicker) {
+  background-color: rgba(15, 23, 42, 0.98) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  border-radius: 16px !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+:global(.react-datepicker__header) {
+  background-color: rgba(30, 41, 59, 0.8) !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important;
+  border-top-left-radius: 16px !important;
+  border-top-right-radius: 16px !important;
+}
+
+:global(.react-datepicker__current-month),
+:global(.react-datepicker-time__header),
+:global(.react-datepicker__day-name) {
+  color: #cbd5e1 !important;
+}
+
+:global(.react-datepicker__day) {
+  color: #94a3b8 !important;
+}
+
+:global(.react-datepicker__day:hover) {
+  background-color: rgba(96, 165, 250, 0.2) !important;
+  color: #60a5fa !important;
+}
+
+:global(.react-datepicker__day--selected),
+:global(.react-datepicker__day--keyboard-selected) {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+:global(.react-datepicker__time-container) {
+  border-left: 1px solid rgba(148, 163, 184, 0.2) !important;
+}
+
+:global(.react-datepicker__time-list-item) {
+  color: #94a3b8 !important;
+}
+
+:global(.react-datepicker__time-list-item:hover) {
+  background-color: rgba(96, 165, 250, 0.2) !important;
+  color: #60a5fa !important;
+}
+
+:global(.react-datepicker__time-list-item--selected) {
+  background-color: #3b82f6 !important;
+  color: white !important;
 }

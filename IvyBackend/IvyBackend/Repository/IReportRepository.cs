@@ -6,7 +6,8 @@ namespace IvyBackend.Repository
     {
         Task<IEnumerable<TransactionFilterDTO>> ApplyFilterAsync(
             int userId,
-            int month,
+            int startMonth,
+            int endMonth,
             int? accountId,
             int? categoryId,
             string? type,

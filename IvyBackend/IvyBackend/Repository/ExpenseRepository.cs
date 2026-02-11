@@ -1,60 +1,155 @@
-﻿using IvyBackend.Data;
+﻿
+using IvyBackend.Data;
 using IvyBackend.Models.DTO;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace IvyBackend.Repository
 {
     public class ExpenseRepository : IExpenseRepository
     {
         private readonly ApplicationDbContext _context;
+
         public ExpenseRepository(ApplicationDbContext context)
         {
             _context = context;
         }
+
+       
         public async Task AddExpense(ExpenseDTO exp)
         {
-            await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                INSERT INTO Expense (Title, Description, Date, Amount, CategoryId, UserId, AccountId)  
-                VALUES ({exp.Title}, {exp.Description}, {exp.Date}, {exp.Amount}, {exp.CategoryId}, {exp.UserId}, {exp.AccountId})");
+            try
+            {
+                await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                    EXEC AddExpense 
+                        @Title = {exp.Title}, 
+                        @Description = {exp.Description}, 
+                        @Date = {exp.Date}, 
+                        @Amount = {exp.Amount}, 
+                        @CategoryId = {exp.CategoryId}, 
+                        @UserId = {exp.UserId}, 
+                        @AccountId = {exp.AccountId}");
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.Error.WriteLine($"SQL Error in AddExpense: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in AddExpense: {ex.Message}");
+                throw;
+            }
         }
 
-        public async Task<decimal> FullExpenseOfAUser(int user_id, int month)
+        public async Task<decimal> FullExpenseOfAUser(int userId, int month)
         {
-            var data = await(
-                            from u in _context.Users
-                            join e in _context.Expenses
-                            on u.Id equals e.UserId
-                            where u.Id == user_id && e.Date.Month == month
-                            select e.Amount
-                        ).SumAsync(); 
-            return data;
+            try
+            {
+                await using var conn = _context.Database.GetDbConnection();
+                await conn.OpenAsync();
+
+                await using var cmd = conn.CreateCommand();
+                cmd.CommandText = "FullExpenseOfAUser";
+                cmd.CommandType = CommandType.StoredProcedure;
+
+             
+                var p1 = cmd.CreateParameter();
+                p1.ParameterName = "@UserId";
+                p1.DbType = DbType.Int32;
+                p1.Value = userId;
+                cmd.Parameters.Add(p1);
+          
+                var p2 = cmd.CreateParameter();
+                p2.ParameterName = "@Month";
+                p2.DbType = DbType.Int32;
+                p2.Value = month;
+                cmd.Parameters.Add(p2);
+
+                var result = await cmd.ExecuteScalarAsync();
+
+                return result != DBNull.Value ? Convert.ToDecimal(result) : 0m;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in FullExpenseOfAUser: " + ex.Message);
+                throw;
+            }
         }
+
 
         public async Task<IEnumerable<ExpMonthDTO>> GetExpenseByMonth(int user_id, int month)
         {
-            var data = await (
-               from u in _context.Users
-               join e in _context.Expenses
-               on u.Id equals e.UserId
-               join c in _context.Categories
-               on e.CategoryId equals c.Id
-               join a in _context.Accounts
-               on e.AccountId equals a.Id
-               join curr in _context.Currencies
-               on u.CurrencyId equals curr.Id
-               where u.Id == user_id && e.Date.Month == month
-               select new ExpMonthDTO
-               {
-                   UserId = u.Id,
-                   C_Name = c.Name,
-                   C_Image = c.Image,
-                   C_Color = c.Color,
-                   A_Name = a.Name,
-                   Cr_Currency = curr.Title,
-                   E_Amount = e.Amount
-               }
-               ).ToListAsync();
-            return data;
+            try
+            {
+                var expenses = await _context.Set<ExpMonthDTO>()
+                    .FromSqlInterpolated($@"
+                        EXEC GetExpenseByMonth 
+                            @UserId = {user_id}, 
+                            @Month = {month}")
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                return expenses;
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.Error.WriteLine($"SQL Error in GetExpenseByMonth: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in GetExpenseByMonth: {ex.Message}");
+                throw;
+            }
         }
+
+        public async Task UpdateExpense(ExpenseDTO exp)
+        {
+            try
+            {
+                await _context.Database.ExecuteSqlInterpolatedAsync($@"
+            EXEC UpdateExpense 
+                @ExpenseId = {exp.Id}, 
+                @Title = {exp.Title}, 
+                @Description = {exp.Description}, 
+                @Date = {exp.Date}, 
+                @Amount = {exp.Amount}, 
+                @CategoryId = {exp.CategoryId}, 
+                @AccountId = {exp.AccountId}");
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.Error.WriteLine($"SQL Error in UpdateExpense: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in UpdateExpense: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task DeleteExpense(int expenseId)
+        {
+            try
+            {
+                await _context.Database.ExecuteSqlInterpolatedAsync($@"
+            EXEC DeleteExpense 
+                @ExpenseId = {expenseId}");
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.Error.WriteLine($"SQL Error in DeleteExpense: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in DeleteExpense: {ex.Message}");
+                throw;
+            }
+        }
+
     }
 }

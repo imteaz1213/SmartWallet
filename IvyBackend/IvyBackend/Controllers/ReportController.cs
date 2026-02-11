@@ -16,13 +16,14 @@ namespace IvyBackend.Controllers
         [HttpGet("ApplyFilter")]
         public async Task<IActionResult> ApplyFilter(
             [FromQuery] int user,
-            [FromQuery] int month,
+            [FromQuery] int startMonth,
+            [FromQuery] int endMonth,
             [FromQuery] int? accountId,
             [FromQuery] int? categoryId,
             [FromQuery] string? type,
             [FromQuery] decimal? amount)
         {
-            var result = await _reportRepository.ApplyFilterAsync(user, month, accountId, categoryId, type, amount);
+            var result = await _reportRepository.ApplyFilterAsync(user, startMonth,endMonth, accountId, categoryId, type, amount);
 
             if (!result.Any())
                 return BadRequest("Invalid type or no records found. Must be 'Income' or 'Expense'.");
