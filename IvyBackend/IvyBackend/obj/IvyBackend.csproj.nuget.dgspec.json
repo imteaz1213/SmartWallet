@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Ivy\\IvyBackend\\IvyBackend\\IvyBackend.csproj": {}
+    "D:\\Ivy\\ivybackend\\ivybackend\\IvyBackend.csproj": {}
   },
   "projects": {
-    "D:\\Ivy\\IvyBackend\\IvyBackend\\IvyBackend.csproj": {
+    "D:\\Ivy\\ivybackend\\ivybackend\\IvyBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Ivy\\IvyBackend\\IvyBackend\\IvyBackend.csproj",
+        "projectUniqueName": "D:\\Ivy\\ivybackend\\ivybackend\\IvyBackend.csproj",
         "projectName": "IvyBackend",
-        "projectPath": "D:\\Ivy\\IvyBackend\\IvyBackend\\IvyBackend.csproj",
+        "projectPath": "D:\\Ivy\\ivybackend\\ivybackend\\IvyBackend.csproj",
         "packagesPath": "C:\\Users\\IMTEAZ AHMED\\.nuget\\packages\\",
-        "outputPath": "D:\\Ivy\\IvyBackend\\IvyBackend\\obj\\",
+        "outputPath": "D:\\Ivy\\ivybackend\\ivybackend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

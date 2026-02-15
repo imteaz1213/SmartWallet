@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Ivy\\IvyBackend\\IvyBackend\\IvyBackend.csproj": {}
+    "D:\\Ivy\\IvyBackend\\IvyBackend\\ivybackend\\IvyBackend.csproj": {}
   },
   "projects": {
-    "D:\\Ivy\\IvyBackend\\IvyBackend\\IvyBackend.csproj": {
+    "D:\\Ivy\\IvyBackend\\IvyBackend\\ivybackend\\IvyBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Ivy\\IvyBackend\\IvyBackend\\IvyBackend.csproj",
+        "projectUniqueName": "D:\\Ivy\\IvyBackend\\IvyBackend\\ivybackend\\IvyBackend.csproj",
         "projectName": "IvyBackend",
-        "projectPath": "D:\\Ivy\\IvyBackend\\IvyBackend\\IvyBackend.csproj",
+        "projectPath": "D:\\Ivy\\IvyBackend\\IvyBackend\\ivybackend\\IvyBackend.csproj",
         "packagesPath": "C:\\Users\\IMTEAZ AHMED\\.nuget\\packages\\",
-        "outputPath": "D:\\Ivy\\IvyBackend\\IvyBackend\\obj\\",
+        "outputPath": "D:\\Ivy\\IvyBackend\\IvyBackend\\ivybackend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -99,7 +99,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
