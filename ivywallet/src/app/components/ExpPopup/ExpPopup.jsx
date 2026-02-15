@@ -174,7 +174,16 @@ const ExpPopup = ({ onClose, editData = null, refresh }) => {
 
           <div className={styles.formGroup}>
             <label className={styles.label}><DollarSign size={18} /><span>Amount</span></label>
-            <input className={styles.input} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+            <input className={styles.input} type="number" value={amount} onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '') {
+                    setAmount(''); 
+                  } else if (parseFloat(value) >= 0) {
+                    setAmount(value);
+                  }
+                }} 
+
+ />
           </div>
 
           <div className={styles.formGroup}>
