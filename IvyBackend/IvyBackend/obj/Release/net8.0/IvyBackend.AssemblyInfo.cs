@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IvyBackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e85d3ac8accdbb7c8212ef03060af039b7024529")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+05efff72a82f5c653fefcdd2e39a82a3658cc88a")]
 [assembly: System.Reflection.AssemblyProductAttribute("IvyBackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IvyBackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
